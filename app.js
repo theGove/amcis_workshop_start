@@ -91,7 +91,7 @@ function get_user_name(){log(2,arguments,filename,get_user_name)
 }
 
 
-async function show_tasks(store){log(4,arguments,filename,show_tasks)
+async function show_tasks(store){
     // To be built during workshop
 }
 
