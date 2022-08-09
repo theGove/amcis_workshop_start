@@ -35,14 +35,16 @@ const authenticated_menu=[
         {label:"Change Password",function:"change_password()",panel: "password_panel"},
         {label:"Personal Data",function:"navigate({fn:'personal_data'})"},
     ]},
+
     //This menu item allows the user to logout
     {label:"Logout",function:"logout()", home:"Logout"},
-    //This menu item allows users to view the daily tasks to be performed
-    {label:"Daily Task",function:"navigate({fn:'show_tasks'})",panel:"daily_tasks"}, 
+
     //This menu item allows the user to add additional users. Note the "roles" property of the object. Only users with the role of "manager", "owner", or "administrator" will see this menu item. User roles are not heirachical. All user types you wish to see a menu item must be listed in the elements of the array.
     {label:"Add Employee",function:"navigate({fn:'create_account'})", roles:["manager","owner","administrator"]}, 
+
     //This menu item adds the menu item for updating an inventory count. Notice how a parameter is passed to the "ice_cream_inventory" function
     {label:"Enter Ice Cream Inventory",home:"Inventory",function:"navigate({fn:'record_inventory'})"},
+
     //the remaining menu items are added
     {label:"Ice Cream Inventory Summary",home:"Inventory",function:"navigate({fn:'show_inventory_summary'})", roles:["owner","administrator"]},
 
@@ -90,145 +92,12 @@ function get_user_name(){log(2,arguments,filename,get_user_name)
 
 
 async function show_tasks(store){log(4,arguments,filename,show_tasks)
-    const user_data=get_user_data()
-    
-
-    let store_id
-
-    if(store){
-        store_id=store
-    }else if(user_data.store.length===1){
-        store_id=user_data.store[0]
-    }else{
-        // we don't know which store to use. ask the user
-
-
-        if(tag("daily_tasks").style.display!=="none"){
-            tag("daily_tasks").style.display="none"
-            return
-          }
-      
-
-
-        const html=['<form>Store: <select name="store">']
-        for(store of user_data.store){
-            html.push(`<option value="${store}">${store_list()[store]}</option>`)
-        }
-        //When the user selects the store using the form, the "show_tasks" function is invoked on the submission of the form to populate the rest of this page with the data for that store
-        html.push(`</select>
-                    <button type="button" id="choose_store_button" onclick="show_tasks(store.options[store.selectedIndex].value)">Submit</button>
-                    </form>`)
-        tag("daily_tasks").innerHTML=html.join("")
-
-        tag("daily_tasks").style.display="block"
-        return
-    }
-
-    tag("daily_tasks").style.display="none"
-
-    tag("canvas").innerHTML=` 
-    <div class="page">
-        <h2>Daily Tasks</h2>
-        <div id="tasks_panel">
-        <i class="fas fa-spinner fa-pulse"></i>
-        </div>
-    </div>
-    `
-
-    
-    //retrieve the store data using the local server_request function to request the Google App Script function "get_stores" retrieve the employee data.
-    let response=await server_request({
-        mode:"get_tasks"
-    })
-
-    
-    // a status of success indicates that the server request ran without error
-    if(response.status==="success"){
-        // html is an array that we'll use to build the HTML to render
-        const html=['<table><tr><td>Each of these tasks must be completed each day the store is open.</td></tr>']
-
-        
-        //add the headers to the table
-
-        // for(const field of fields){
-        //     html.push("<th>")
-        //     html.push(field.label)
-        //     html.push("</th>")
-        // }
-
-        //process through the employee records that were returned and add them to the table.
-        let current_group=""
-        for(const record of response.records){
-            if (current_group !== record.fields.group){
-                current_group = record.fields.group
-                html.push('</table><br>')
-                html.push('<table cellpadding="5"><tr><td colspan="2" style="background-color:white"><span style="color:#800000;font-weight:bold">')
-                html.push(current_group)
-                html.push('</span></td></tr>')
-            }
-             console.log(record)
-             html.push("<tr><td><b>")
-             html.push(record.fields.task)
-             html.push(": </b>")
-             html.push(record.fields.details)
-             html.push(`</td><td id="${record.id}">`)
-             html.push(`<button type="button" data-store="${store_id}" id="button-${record.id}" onclick="record_task(this)">Done</button>`)
-                
-             html.push("</td></tr>")
-        }
-        html.push("</table>")
-        //console.log(html) 
-        tag("tasks_panel").innerHTML=html.join("")
-    
-    }else{
-        tag("tasks_panel").innerHTML="Unable to get store list: " + response.message + "."
-    }    
-
-    
-    hide_menu()
-
-
-    response=await server_request({
-        mode:"get_activity",
-        store:user_data.store_list[store_id]
-    })
-
-    if(response.status==="success"){
-        for(const record of response.records){
-            console.log(record)
-            tag(record.fields.task).innerHTML='<i class="fa-solid fa-check"></i>'
-        }
-    }else{
-        message({
-            message:"Unable to get store list: " + response.message + ".",
-            title:"Error",
-            kind:"error",
-            seconds:8
-        })        
-    }  
+    // To be built during workshop
 }
 
 
 async function record_task(button){
-    const task_id=button.id.split("-")[1]
-
-    tag(task_id).innerHTML='<i class="fas fa-spinner fa-pulse"></i>'
-    const response=await server_request({
-        mode:"record_task_done",
-        task:task_id,
-        store:button.dataset.store
-    })
-    if(response.status==="success"){
-            tag(task_id).innerHTML='<i class="fa-solid fa-check"></i>'
-    }else{
-        message({
-            message:"Unable to get store list: " + response.message + ".",
-            title:"Error",
-            kind:"error",
-            seconds:8
-        })        
-    }  
-
+    // To be built during workshop
 }
 
 
@@ -692,14 +561,14 @@ function move_down(source){log(3,arguments,filename,move_down)
 
 function flavor_total(flavor_id){log(4,arguments,filename,flavor_total)
     //used to calculate the running total for observations as they are entered into the input form
-    let flavor_total=0
+    let flvr_total=0
     for(const key of Object.keys(window.cols)){
         if(isNaN(key)){
            // console.log(flavor_id + "|" + key.replace(/\s/g,"_"))
-            flavor_total += parseFloat(tag(flavor_id + "|" + key.replace(/\s/g,"_")).value) || 0
+            flvr_total += parseFloat(tag(flavor_id + "|" + key.replace(/\s/g,"_")).value) || 0
         }
     }
-    return flavor_total
+    return flvr_total
 }
 
 async function update_observation(entry){log(3,arguments,filename,update_observation)

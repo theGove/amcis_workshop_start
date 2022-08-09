@@ -1,3 +1,10 @@
+AMCIS 2022 Workshop: Leveraging the Free their
+
+Instructions to get your computer configured with the needed software to 
+participate in the workshop can be found at https://db-schema.blogspot.com/p/amcis-workshop-configuration.html.
+
+
+
 The client side files for this project consist of:
 
 1: index.html - the main html page for the site
@@ -9,4 +16,6 @@ The client side files for this project consist of:
 7: session.js - this javascript file contains the code for creating and maintaining user accounts. It also handles user logins.
 8: config.js - this javascript file is used to point the client side code to the google app script server. It will need to be updated each time the server is deployed.
 It is anticipated that student developers will likely only modify the app.js and app.css files for their student projects.
+
+
 
